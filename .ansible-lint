@@ -2,9 +2,6 @@
 # ansible-lint configuration file
 profile: production
 
-# Path to ansible executables
-ansible_core_version: ">=2.12"
-
 # Exclude certain paths
 exclude_paths:
   - .git/
@@ -24,7 +21,7 @@ rules:
   # Disable some rules that might be too strict for initial setup
   line-length:
     max: 120
-  
+
 # Use specific rule sets
 use_default_rules: true
 
