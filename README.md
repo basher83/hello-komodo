@@ -92,26 +92,26 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-### Using Make
+### Using Mise
 
 ```bash
 # Install dependencies
-make install
+mise run install
 
 # Build collection
-make build
+mise run build
 
 # Run all linting
-make lint
+mise run lint
 
 # Run tests
-make test
+mise run test
 
 # Clean artifacts
-make clean
+mise run clean
 
-# Show all targets
-make help
+# Show all tasks
+mise run help
 ```
 
 ### Manual Setup
