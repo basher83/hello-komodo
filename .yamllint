@@ -16,6 +16,9 @@ rules:
   key-duplicates: enable
   new-line-at-end-of-file: enable
   trailing-spaces: enable
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
 
 ignore: |
   .git/
