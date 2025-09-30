@@ -82,24 +82,86 @@ ansible-playbook basher83.komodo.install
 
 ## Development
 
+### Quick Setup
+
+```bash
+# Clone and setup
+git clone https://github.com/basher83/hello-komodo.git
+cd hello-komodo
+chmod +x setup.sh
+./setup.sh
+```
+
+### Using Make
+
+```bash
+# Install dependencies
+make install
+
+# Build collection
+make build
+
+# Run all linting
+make lint
+
+# Run tests
+make test
+
+# Clean artifacts
+make clean
+
+# Show all targets
+make help
+```
+
+### Manual Setup
+
+#### Prerequisites
+
+- Python 3.6+
+- Ansible 2.9+
+- Node.js 16+ (optional, for markdown linting)
+
+#### Install Dependencies
+
+```bash
+# Python dependencies
+pip install -r requirements.txt
+
+# Node.js dependencies (optional)
+npm install
+```
+
 ### Linting
 
 This collection uses ansible-lint and markdownlint-cli2 for code quality assurance.
 
 ```bash
-# Install linting tools
-pip install -r requirements.txt
-
 # Run ansible-lint
 ansible-lint
 
-# Run markdown lint
-markdownlint-cli2 "**/*.md"
+# Run YAML lint
+yamllint .
+
+# Run markdown lint (requires Node.js)
+npm run lint:markdown
+
+# Validate YAML syntax
+python3 -c "import yaml; [yaml.safe_load(open(f)) for f in ['ansible_collections/basher83/komodo/galaxy.yml']]"
 ```
 
 ### Testing
 
 ```bash
+# Build collection
+make build
+
+# Install collection locally
+ansible-galaxy collection install ./build/basher83-komodo-*.tar.gz --force
+
+# Test playbook syntax
+ansible-playbook --syntax-check ansible_collections/basher83/komodo/playbooks/install.yml
+
 # Validate collection structure
 ansible-galaxy collection build ansible_collections/basher83/komodo/
 ```
