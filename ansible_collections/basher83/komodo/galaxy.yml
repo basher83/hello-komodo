@@ -1,0 +1,18 @@
+---
+namespace: basher83
+name: komodo
+version: 1.0.0
+readme: README.md
+authors:
+  - "basher83"
+description: Ansible collection for managing Komodo
+license:
+  - MIT
+license_file: LICENSE
+tags:
+  - komodo
+  - management
+  - infrastructure
+dependencies: {}
+repository: "https://github.com/basher83/hello-komodo"
+issues: "https://github.com/basher83/hello-komodo/issues"

@@ -1,0 +1,19 @@
+{
+  "name": "hello-komodo",
+  "version": "1.0.0",
+  "description": "Ansible collection for managing Komodo",
+  "main": "index.js",
+  "scripts": {
+    "lint:markdown": "markdownlint-cli2 \"**/*.md\""
+  },
+  "devDependencies": {
+    "markdownlint-cli2": "^0.8.0"
+  },
+  "keywords": [
+    "ansible",
+    "komodo",
+    "infrastructure"
+  ],
+  "author": "basher83",
+  "license": "MIT"
+}

@@ -1,0 +1,71 @@
+---
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Node.js dependencies
+        run: npm install
+
+      - name: Run ansible-lint
+        run: ansible-lint
+
+      - name: Run yamllint
+        run: yamllint .
+
+      - name: Run markdownlint
+        run: npm run lint:markdown
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ansible-version: ['>=6.0.0', '>=7.0.0']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Ansible
+        run: |
+          python -m pip install --upgrade pip
+          pip install "ansible${{ matrix.ansible-version }}"
+
+      - name: Build collection
+        run: ansible-galaxy collection build ansible_collections/basher83/komodo/
+
+      - name: Install collection
+        run: ansible-galaxy collection install basher83-komodo-*.tar.gz
+
+      - name: Test collection syntax
+        run: |
+          ansible-playbook --syntax-check ansible_collections/basher83/komodo/playbooks/install.yml
