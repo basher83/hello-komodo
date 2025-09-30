@@ -16,12 +16,6 @@ skip_list: []
 # Enable offline mode (useful for CI)
 offline: false
 
-# Rules configuration
-rules:
-  # Disable some rules that might be too strict for initial setup
-  line-length:
-    max: 120
-
 # Use specific rule sets
 use_default_rules: true
 
