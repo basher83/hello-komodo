@@ -61,11 +61,12 @@ jobs:
           pip install "ansible${{ matrix.ansible-version }}"
 
       - name: Build collection
-        run: ansible-galaxy collection build ansible_collections/basher83/komodo/
+        run: ansible-galaxy collection build ansible_collections/basher83/komodo/ --output-path ./
 
       - name: Install collection
-        run: ansible-galaxy collection install basher83-komodo-*.tar.gz
+        run: ansible-galaxy collection install basher83-komodo-*.tar.gz --force
 
       - name: Test collection syntax
         run: |
-          ansible-playbook --syntax-check ansible_collections/basher83/komodo/playbooks/install.yml
+          cd /tmp
+          ansible-playbook --syntax-check $GITHUB_WORKSPACE/ansible_collections/basher83/komodo/playbooks/install.yml

@@ -6,14 +6,14 @@ config:
     line_length: 120
     tables: false
     code_blocks: false
-  
+
   # Allow inline HTML
   MD033: false
-  
+
   # Allow duplicate headings in different files
   MD024:
     siblings_only: true
-  
+
   # Allow first line not to be H1
   MD041: false
 
@@ -22,7 +22,7 @@ globs:
   - "**/*.md"
   - "**/*.markdown"
 
-# Exclude patterns  
+# Exclude patterns
 ignores:
   - "node_modules/**"
   - ".git/**"

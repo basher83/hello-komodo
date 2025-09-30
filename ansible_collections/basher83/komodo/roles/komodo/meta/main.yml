@@ -2,7 +2,7 @@
 galaxy_info:
   author: basher83
   description: Ansible role for managing Komodo
-  company: 
+  company:
   license: MIT
   min_ansible_version: "2.9"
   platforms:
