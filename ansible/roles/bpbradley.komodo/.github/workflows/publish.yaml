@@ -1,0 +1,33 @@
+---
+
+name: Publish to Ansible Galaxy
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  publish_role:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - name: Install Ansible
+        run: |
+          pip install ansible
+
+      - name: Import role on Galaxy
+        run: |
+          ansible-galaxy role import bpbradley ansible-role-komodo --branch main --token $GALAXY_TOKEN
+        env:
+          GALAXY_TOKEN: ${{ secrets.ANSIBLE_GALAXY_TOKEN }}

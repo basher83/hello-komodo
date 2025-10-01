@@ -1,0 +1,87 @@
+komodo_version: "v1.19.5"
+
+# This defines the systemd service scope.
+# "user" will run the service as a user service (default, recommended)
+# "system" will run the service as a system service, running as the komodo_user
+komodo_service_scope: "user"
+
+# You should encrypt entries with `ansible-vault encrypt_string 'supersecretpasskey' --name 'passkey'`
+# If encrypting, you must run with --ask-vault-pass or have a vault password file.
+komodo_passkeys: []
+
+# New to v1.17.1 which introduces IPv6 support.
+# If you have issues, set `komodo_bind_ip` to `0.0.0.0`
+# to revert to previous behaviour.
+komodo_bind_ip: "[::]"
+
+# Replace with your komodo core IP if desired so that only core can access it
+komodo_allowed_ips: []
+
+# Allows creation of the komodo user if needed
+allow_create_komodo_user: "{{ (komodo_action | default('update')) == 'install' }}"
+# Allows modification of the komodo user if needed (i.e. add to docker group, enable/disable linger)
+allow_modify_komodo_user: true
+# Allows deletion of the komodo user during uninstall
+allow_delete_komodo_user: false
+
+# Add name/value pairs containing secrets that periphery will have internal access to
+# Example:
+#   komodo_agent_secrets:
+#     - name: "SECRET_1"
+#       value: "supersecret1"
+#     - name: "SECRET_2"
+#       value: "supersecret2"
+komodo_agent_secrets: []
+
+# Add name/value pairs containing extra env variables available to komodo periphery environment
+# Example:
+#   komodo_extra_env:
+#     - name: "EXTRA_ENV_NAME"
+#       value: "extra_env_value"
+komodo_extra_env: []
+
+# Necessary if we want to enable automatic management of the periphery server in core
+enable_server_management: false
+komodo_core_url: ""
+komodo_core_api_key: ""
+komodo_core_api_secret: ""
+server_name: "{{ inventory_hostname }}"
+server_address: "" # Leave blank to try and autodetect
+server_passkey: "" # Leave blank to use global passkeys in core configuration
+generate_server_passkey: false # Allow a generation of a random passkey
+
+komodo_user: "komodo"
+komodo_group: "{{ komodo_user }}"
+
+komodo_home: "/home/{{ komodo_user }}"
+komodo_bin_dir: "{{ komodo_home }}/.local/bin"
+komodo_bin_path: "{{ komodo_bin_dir }}/periphery"
+
+komodo_config_dir: "{{ komodo_home }}/.config/komodo"
+# default config template
+komodo_config_file_template: "periphery.config.toml.j2"
+komodo_config_path: "{{ komodo_config_dir }}/periphery.config.toml"
+
+# default service template
+komodo_service_file_template: "periphery.service.j2"
+
+periphery_port: 8120
+root_dir: "{{ komodo_home }}/.komodo"
+repo_dir: "{{ root_dir }}/repos"
+stack_dir: "{{ root_dir }}/stacks"
+build_dir: "{{ root_dir }}/build"
+stacks_polling_rate: "5-sec"
+
+ssl_enabled: true
+
+logging_level: "info"
+logging_stdio: "standard"
+logging_opentelemetry_service_name: "Komodo-Periphery"
+
+# The user can override komodo_bin directly if desired
+komodo_bin: ""
+
+# These variables likely should not ever be changed.
+komodo_bin_x86: "periphery-x86_64"
+komodo_bin_x86_legacy: "periphery"
+komodo_bin_aarch64: "periphery-aarch64"

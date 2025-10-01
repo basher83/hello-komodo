@@ -1,0 +1,103 @@
+---
+# =============================================================================
+# KOMODO INVENTORY - SINGLE SOURCE OF TRUTH
+# =============================================================================
+# All configuration centralized in this file for maximum simplicity
+
+all:
+  vars:
+    # Network & Connection Settings
+    ansible_user: ansible
+
+    # Komodo Core Settings
+    komodo_install_dir: "/opt/komodo"
+    komodo_port: 9120
+    komodo_mongo_port: 27017
+    komodo_mongo_cache_size_gb: 2
+
+    # Komodo Periphery Settings
+    komodo_periphery_port: 8120
+    komodo_periphery_version: "latest"
+    komodo_user: "komodo"
+    komodo_group: "komodo"
+    komodo_bind_ip: "0.0.0.0"
+    komodo_bind_port: "{{ komodo_periphery_port }}"
+    komodo_allowed_ips: []
+    komodo_secrets: []
+    komodo_periphery_root_directory: "/etc/komodo"
+    enable_server_management: true
+
+    # Computed URLs
+    komodo_core_url: "http://{{ hostvars[groups['core'][0]]['ansible_host'] }}:{{ komodo_port }}"
+    komodo_periphery_url_pattern: "https://{host}:{{ komodo_periphery_port }}"
+
+    # Authentication Settings
+    komodo_auth_base_url: "{{ komodo_core_url }}"
+    # TODO: Configure authentication - Options:
+    # 1. Use 1Password Connect (requires setup)
+    # 2. Use Ansible Vault: ansible-vault encrypt_string 'your-password' --name 'komodo_auth_admin_password'
+    # 3. Use environment variables: export KOMODO_ADMIN_USERNAME=admin
+    # 4. Set directly in group_vars/vault.yml (encrypted with ansible-vault)
+    #
+    # Uncomment and configure ONE of the following methods:
+    #
+    # Method 1: 1Password Connect (requires 1Password setup)
+    # komodo_auth_admin_username: "{{ lookup('community.general.onepassword', 'Komodo', field='username', vault='Homelab Ansible') }}"
+    # komodo_auth_admin_password: "{{ lookup('community.general.onepassword', 'Komodo', field='password', vault='Homelab Ansible') }}"
+    # komodo_core_api_key: "{{ lookup('community.general.onepassword', 'Komodo', field='komodo_api_key', vault='Homelab Ansible') }}"
+    # komodo_core_api_secret: "{{ lookup('community.general.onepassword', 'Komodo', field='komodo_api_secret', vault='Homelab Ansible') }}"
+    #
+    # Method 2: Environment Variables (configured via mise)
+    komodo_auth_admin_username: "{{ lookup('env', 'KOMODO_ADMIN_USERNAME') }}"
+    komodo_auth_admin_password: "{{ lookup('env', 'KOMODO_ADMIN_PASSWORD') }}"
+    komodo_core_api_key: "{{ lookup('env', 'KOMODO_API_KEY') }}"
+    komodo_core_api_secret: "{{ lookup('env', 'KOMODO_API_SECRET') }}"
+    komodo_passkeys: "{{ lookup('env', 'KOMODO_PASSKEYS') }}"
+    # Method 3: Ansible Vault (recommended - create ansible/group_vars/all/vault.yml)
+    # See: https://docs.ansible.com/ansible/latest/vault_guide/vault.html
+    #
+    komodo_auth_service_user: "komodo-automation"
+    komodo_auth_service_user_description: "Service user for automated deployments and API access"
+    komodo_auth_api_key_name: "deployment-api-key"
+
+    # komodo-op Configuration (Secret Management)
+    enable_komodo_op: true  # Set to true to enable komodo-op deployment
+    # NOTE: komodo-op repository is now defined in komodo-resource-syncs, not here
+
+    # Resource Syncs Configuration (GitOps)
+    komodo_resource_syncs_repo: "brumi1024/komodo-resource-syncs"
+    komodo_resource_syncs_branch: "main"
+    komodo_resource_syncs_git_account: "brumi1024"
+
+
+  children:
+    # Control machine (not managed by infrastructure playbooks)
+    control:
+      hosts:
+        localhost:
+          ansible_connection: local
+
+    # Managed Komodo infrastructure
+    komodo:
+      vars:
+        # Tailscale network domain
+        tailnet: "tailfb3ea.ts.net"
+      children:
+        core:
+          hosts:
+            komodo-core:
+              ansible_host: "komodo.{{ tailnet }}"
+              node_site: home
+              komodo_role: core
+
+        periphery:
+          hosts:
+            do-voyager:
+              ansible_host: "do-voyager.{{ tailnet }}"
+              node_site: vps
+              # Remote periphery with auto-generated passkey
+              generate_server_passkey: true
+              # Use Tailnet hostname for reliable cross-site connectivity
+              server_address: "https://{{ ansible_host }}:{{ komodo_periphery_port }}"
+
+

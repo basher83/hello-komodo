@@ -1,0 +1,40 @@
+---
+# Initialize Komodo Authentication and API Keys
+# This playbook uses the komodo_auth role to handle authentication setup
+
+- name: Initialize Komodo Authentication
+  hosts: localhost
+  gather_facts: false
+  vars:
+    komodo_port: "{{ hostvars[groups['core'][0]]['komodo_port'] }}"
+    komodo_install_dir: "{{ hostvars[groups['core'][0]]['komodo_install_dir'] }}"
+
+  pre_tasks:
+    - name: Display important notice about API key creation
+      ansible.builtin.debug:
+        msg:
+          - "🔑 Initializing Komodo Authentication..."
+          - ""
+          - "⚠️  IMPORTANT: If this is a fresh deployment and you have stale API keys"
+          - "   in 1Password from a previous deployment, authentication setup will be"
+          - "   skipped, causing silent failures in subsequent steps."
+          - ""
+          - "💡 If you encounter issues, use force recreation:"
+          - "   ansible-playbook playbooks/03_komodo_auth.yml -e komodo_auth_force_recreate=true"
+          - "   OR clean up old API keys: op item delete 'Komodo' --vault 'Homelab Ansible'"
+          - ""
+
+  roles:
+    - role: komodo_auth
+
+  post_tasks:
+    - name: Display initialization summary
+      ansible.builtin.debug:
+        msg:
+          - "🔑 Komodo Authentication Initialization Complete!"
+          - ""
+          - "✅ Admin user: {{ komodo_auth_admin_username | default('configured') }}"
+          - "✅ Service user: {{ komodo_auth_service_user }} (created with admin permissions)"
+          - "✅ API credentials: Generated and stored in 1Password"
+          - ""
+          - "🚀 Ready for periphery deployment!"

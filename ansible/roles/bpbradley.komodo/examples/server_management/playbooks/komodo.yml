@@ -1,0 +1,10 @@
+---
+- name: Manage Komodo Periphery Service
+  hosts: komodo
+  roles:
+    - role: bpbradley.komodo
+      # Default action / version. Can be overriden on command line with -e
+      # Since we gave API credentials for this role, we can check the
+      # version in Komodo Core and install the matching periphery version
+      komodo_action: "install"
+      komodo_version: "core"

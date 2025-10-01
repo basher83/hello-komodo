@@ -1,0 +1,36 @@
+{% set system_scope = (komodo_service_scope | default('user')) == 'system' %}
+[Unit]
+Description=Agent to connect with Komodo Core
+StartLimitIntervalSec=15min
+StartLimitBurst=180
+{% if system_scope %}
+After=network-online.target
+Wants=network-online.target
+{% endif %}
+
+[Service]
+{% if system_scope %}
+User={{ komodo_user }}
+Group={{ komodo_group }}
+WorkingDirectory={{ komodo_home }}
+{% endif %}
+Environment="HOME={{ komodo_home }}"
+Environment="UID={{ ansible_facts.getent_passwd[komodo_user].1 }}"
+Environment="GID={{ ansible_facts.getent_passwd[komodo_user].2 }}"
+{% if komodo_extra_env | length > 0 %}
+{% for env in komodo_extra_env %}
+Environment="{{ env.name }}={{ env.value }}"
+{% endfor %}
+{% endif %}
+ExecStart=/bin/sh -lc "{{ komodo_bin_path }} --config-path {{ komodo_config_path }}"
+Restart=on-failure
+RestartSec=5s
+TimeoutStartSec=0
+
+[Install]
+{% if system_scope %}
+WantedBy=multi-user.target
+{% else %}
+WantedBy=default.target
+{% endif %}
+
