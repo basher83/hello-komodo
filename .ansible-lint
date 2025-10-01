@@ -8,7 +8,6 @@ exclude_paths:
   - .github/
   - .cache/
   - .vscode/
-  - node_modules/
 
 # Skip specific rules (if needed)
 skip_list: []

@@ -24,6 +24,5 @@ globs:
 
 # Exclude patterns
 ignores:
-  - "node_modules/**"
   - ".git/**"
   - "**/.git/**"
