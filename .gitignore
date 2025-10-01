@@ -6,6 +6,7 @@
 *.tar.gz
 *-*-*.tar.gz
 
+.venv/
 
 # MCP
 .mcp.json
