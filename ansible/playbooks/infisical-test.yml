@@ -1,0 +1,54 @@
+---
+# Quick Authenticated Status Check
+#
+# This playbook performs authenticated status checks for the TEST_TOKEN
+#
+# Usage:
+#   ansible-playbook ansible/playbooks/infisical-test.yml
+
+- name: Infisical Ansible Playbook Tests
+  hosts: localhost
+  gather_facts: false
+  collections:
+    - infisical.vault
+  
+  pre_tasks:
+    - name: Retrieve Test token form Infisical securely
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/infisical-secret-lookup.yml"
+      vars:
+        secret_name: 'TEST_SECRET'
+        secret_var_name: 'test_token'
+        fallback_env_var: 'TEST_TOKEN'  # Optional
+        infisical_path: '/komodo'  # Optional, defaults to /komodo
+        infisical_env: 'prod'  # Optional, defaults to prod
+        allow_empty: false  # Optional, whether to allow empty values
+      tags: [secrets]
+
+  tasks:
+    - name: Confirm retrieval without printing the secret
+      ansible.builtin.debug:
+        msg: "TEST_SECRET length = {{ test_secret | length }}"
+      changed_when: false
+
+    - name: Write secret to a local .env file (demo only)
+      no_log: true
+      ansible.builtin.copy:
+        dest: /tmp/komodo.env
+        mode: "0600"
+        content: |
+          TEST_SECRET={{ test_secret }}
+
+    - name: Display the test secret file contents
+      ansible.builtin.command: cat /tmp/komodo.env
+      register: cat_output
+      changed_when: false
+
+    - name: Show the file contents
+      ansible.builtin.debug:
+        msg: "{{ cat_output.stdout }}"
+      changed_when: false
+
+    - name: Clean up test secret file
+      ansible.builtin.file:
+        path: /tmp/komodo.env
+        state: absent
