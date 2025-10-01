@@ -1,0 +1,7 @@
+---
+# Handlers for komodo role
+- name: restart komodo
+  ansible.builtin.service:
+    name: komodo
+    state: restarted
+  when: komodo_service_enabled | bool

@@ -1,0 +1,6 @@
+---
+- name: Install and configure Komodo
+  hosts: all
+  become: true
+  roles:
+    - basher83.komodo.komodo

@@ -1,0 +1,30 @@
+---
+# ansible-lint configuration file
+profile: production
+
+# Exclude certain paths
+exclude_paths:
+  - .git/
+  - .github/
+  - .cache/
+  - .vscode/
+  - node_modules/
+
+# Skip specific rules (if needed)
+skip_list: []
+
+# Enable offline mode (useful for CI)
+offline: false
+
+# Use specific rule sets
+use_default_rules: true
+
+# Configure mock modules for roles that might use custom modules
+mock_modules: []
+
+# Configure mock roles
+mock_roles: []
+
+# Enable auto-fixing for certain rules
+write_list:
+  - yaml
