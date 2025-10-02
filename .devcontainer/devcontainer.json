@@ -21,7 +21,10 @@
   "mounts": [
     "source=mise-data-volume,target=/mnt/mise-data,type=volume"
   ],
-  "postCreateCommand": ".devcontainer/setup-mise.sh",
+  "postCreateCommand": [
+    ".devcontainer/setup-mise.sh",
+    ".devcontainer/tailscaled-auth-setup.sh"
+  ],
   "runArgs": [
     "--device=/dev/net/tun"
   ]
