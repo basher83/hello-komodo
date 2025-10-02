@@ -43,6 +43,7 @@
         scope: user
       become: true
       become_user: "{{ _komodo_user }}"
+      become_flags: -H
       register: periphery_status
       failed_when: false
 
