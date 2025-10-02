@@ -19,15 +19,15 @@
   import_playbook: playbooks/04_komodo_periphery.yml
   tags: [periphery]
 
-- name: Bootstrap komodo-op Variables
-  import_playbook: playbooks/05_bootstrap_komodo_op.yml
+- name: Bootstrap komodo-op Variables (Optional - 1Password Integration)
+  import_playbook: playbooks/optional/05_bootstrap_komodo_op.yml
   when: enable_komodo_op | default(false) | bool
-  tags: [komodo-op, secrets]
+  tags: [komodo-op, secrets, optional]
 
-- name: Deploy komodo-op Stack
-  import_playbook: playbooks/06_deploy_komodo_op.yml
+- name: Deploy komodo-op Stack (Optional - 1Password Integration)
+  import_playbook: playbooks/optional/06_deploy_komodo_op.yml
   when: enable_komodo_op | default(false) | bool
-  tags: [komodo-op, secrets]
+  tags: [komodo-op, secrets, optional]
 
 - name: Display deployment summary
   hosts: localhost
@@ -40,11 +40,13 @@
           - ""
           - "🖥️  Komodo Core: http://{{ hostvars[groups['core'][0]]['ansible_host'] }}:{{ komodo_port }}"
           - "🔗 Periphery nodes: {{ groups['periphery'] | length }} deployed"
+          - "🔐 Secret Backend: {{ komodo_auth_secret_backend | default('infisical') }}"
           - ""
           - "✅ All services are running and ready for deployments!"
           - "   Log into the Komodo UI to start managing your infrastructure."
           - ""
-          - "💡 Optional: Run 'make deploy-with-op' to enable secret management with komodo-op"
+          - "💡 Optional: Enable 1Password integration with komodo-op"
+          - "   See: playbooks/optional/README.md"
       when: not (enable_komodo_op | default(false) | bool)
 
     - name: Show deployment completion message (with komodo-op)

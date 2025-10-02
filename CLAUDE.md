@@ -9,7 +9,7 @@ Ansible repository for managing Komodo infrastructure and applications. This is 
 Key components:
 - **Komodo Core**: Central management server with web interface (port 9120) and MongoDB
 - **Komodo Periphery**: Distributed agent nodes for executing deployments (port 8120)
-- **komodo-op**: Optional 1Password Connect integration for secret management
+- **Secret Management**: Pluggable backend system (Infisical by default, 1Password optional)
 - **Application Stacks**: GitOps-driven application deployment from GitHub repositories
 
 ## Development Commands
@@ -93,20 +93,23 @@ mise run changelog
 ```
 ansible/
 ├── inventory/all.yml      # Single source of truth for configuration
-├── playbooks/             # Sequential deployment playbooks (01-07)
+├── playbooks/             # Sequential deployment playbooks (01-05)
 │   ├── 01_docker.yml
 │   ├── 02_komodo_core.yml
 │   ├── 03_komodo_auth.yml
 │   ├── 04_komodo_periphery.yml
-│   ├── 05_bootstrap_komodo_op.yml
-│   ├── 06_deploy_komodo_op.yml
-│   └── 07_app_syncs.yml
+│   ├── 05_app_syncs.yml
+│   └── optional/          # Optional integrations
+│       ├── 05_bootstrap_komodo_op.yml  # 1Password integration
+│       ├── 06_deploy_komodo_op.yml     # 1Password integration
+│       └── README.md
 ├── roles/                 # Custom and external Ansible roles
 │   ├── komodo/           # Komodo Core deployment role
-│   ├── komodo_auth/      # Authentication management role
+│   ├── komodo_auth/      # Authentication management role (pluggable backends)
 │   ├── geerlingguy.docker/  # External role
 │   └── bpbradley.komodo/    # External role
 ├── tasks/                # Shared task files
+│   └── infisical-secret-lookup.yml  # Reusable Infisical integration
 ├── site.yml              # Master orchestration playbook
 ├── ansible.cfg           # Ansible configuration
 └── requirements.yml      # Ansible dependencies

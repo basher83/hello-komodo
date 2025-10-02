@@ -25,7 +25,7 @@ This runbook documents the deployment workflow for Komodo infrastructure using A
 ### Install Ansible Dependencies
 
 ```bash
-./scripts/setup-ansible.sh
+mise run install
 ```
 
 This installs all required Ansible collections and dependencies.
