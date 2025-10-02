@@ -15,13 +15,14 @@
         msg:
           - "🔑 Initializing Komodo Authentication..."
           - ""
+          - "   Backend: {{ komodo_auth_secret_backend | default('infisical') }}"
+          - ""
           - "⚠️  IMPORTANT: If this is a fresh deployment and you have stale API keys"
-          - "   in 1Password from a previous deployment, authentication setup will be"
-          - "   skipped, causing silent failures in subsequent steps."
+          - "   in your secret backend from a previous deployment, authentication setup"
+          - "   will be skipped, causing silent failures in subsequent steps."
           - ""
           - "💡 If you encounter issues, use force recreation:"
           - "   ansible-playbook playbooks/03_komodo_auth.yml -e komodo_auth_force_recreate=true"
-          - "   OR clean up old API keys: op item delete 'Komodo' --vault 'Homelab Ansible'"
           - ""
 
   roles:
@@ -35,6 +36,6 @@
           - ""
           - "✅ Admin user: {{ komodo_auth_admin_username | default('configured') }}"
           - "✅ Service user: {{ komodo_auth_service_user }} (created with admin permissions)"
-          - "✅ API credentials: Generated and stored in 1Password"
+          - "✅ API credentials: Generated and stored in {{ komodo_auth_secret_backend | default('infisical') }}"
           - ""
           - "🚀 Ready for periphery deployment!"

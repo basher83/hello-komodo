@@ -27,7 +27,7 @@
   tasks:
     - name: Confirm retrieval without printing the secret
       ansible.builtin.debug:
-        msg: "TEST_SECRET length = {{ test_secret | length }}"
+        msg: "TEST_SECRET length = {{ test_token | length }}"
       changed_when: false
 
     - name: Write secret to a local .env file (demo only)
@@ -36,7 +36,7 @@
         dest: /tmp/komodo.env
         mode: "0600"
         content: |
-          TEST_SECRET={{ test_secret }}
+          TEST_SECRET={{ test_token }}
 
     - name: Display the test secret file contents
       ansible.builtin.command: cat /tmp/komodo.env

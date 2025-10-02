@@ -25,7 +25,7 @@ all:
     komodo_allowed_ips: []
     komodo_secrets: []
     komodo_periphery_root_directory: "/etc/komodo"
-    enable_server_management: true
+    enable_server_management: false
 
     # Computed URLs
     komodo_core_url: "http://{{ hostvars[groups['core'][0]]['ansible_host'] }}:{{ komodo_port }}"
@@ -33,41 +33,49 @@ all:
 
     # Authentication Settings
     komodo_auth_base_url: "{{ komodo_core_url }}"
-    # TODO: Configure authentication - Options:
-    # 1. Use 1Password Connect (requires setup)
-    # 2. Use Ansible Vault: ansible-vault encrypt_string 'your-password' --name 'komodo_auth_admin_password'
-    # 3. Use environment variables: export KOMODO_ADMIN_USERNAME=admin
-    # 4. Set directly in group_vars/vault.yml (encrypted with ansible-vault)
-    #
-    # Uncomment and configure ONE of the following methods:
-    #
-    # Method 1: 1Password Connect (requires 1Password setup)
+
+    # ==========================================================================
+    # Secret Backend Configuration
+    # ==========================================================================
+    # Backend selection (configured in komodo_auth role defaults, can override here)
+    # komodo_auth_secret_backend: "infisical"  # Options: infisical | 1password | ansible_vault
+
+    # Admin credentials (choose ONE method):
+
+    # Method 1: Infisical (using Ansible collection lookup)
+    komodo_auth_admin_username: "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID'), universal_auth_client_secret=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET'), project_id='7b832220-24c0-45bc-a5f1-ce9794a31259', env_slug='prod', path='/komodo', secret_name='KOMODO_ADMIN_USERNAME').value }}"
+    komodo_auth_admin_password: "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID'), universal_auth_client_secret=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET'), project_id='7b832220-24c0-45bc-a5f1-ce9794a31259', env_slug='prod', path='/komodo', secret_name='KOMODO_ADMIN_PASSWORD').value }}"
+    komodo_core_api_key: "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID'), universal_auth_client_secret=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET'), project_id='7b832220-24c0-45bc-a5f1-ce9794a31259', env_slug='prod', path='/komodo', secret_name='KOMODO_API_KEY').value }}"
+    komodo_core_api_secret: "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID'), universal_auth_client_secret=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET'), project_id='7b832220-24c0-45bc-a5f1-ce9794a31259', env_slug='prod', path='/komodo', secret_name='KOMODO_API_SECRET').value }}"
+
+    # Method 2: 1Password (legacy - requires 1Password CLI setup)
     # komodo_auth_admin_username: "{{ lookup('community.general.onepassword', 'Komodo', field='username', vault='Homelab Ansible') }}"
     # komodo_auth_admin_password: "{{ lookup('community.general.onepassword', 'Komodo', field='password', vault='Homelab Ansible') }}"
     # komodo_core_api_key: "{{ lookup('community.general.onepassword', 'Komodo', field='komodo_api_key', vault='Homelab Ansible') }}"
     # komodo_core_api_secret: "{{ lookup('community.general.onepassword', 'Komodo', field='komodo_api_secret', vault='Homelab Ansible') }}"
-    #
-    # Method 2: Environment Variables (configured via mise)
-    komodo_auth_admin_username: "{{ lookup('env', 'KOMODO_ADMIN_USERNAME') }}"
-    komodo_auth_admin_password: "{{ lookup('env', 'KOMODO_ADMIN_PASSWORD') }}"
-    komodo_core_api_key: "{{ lookup('env', 'KOMODO_API_KEY') }}"
-    komodo_core_api_secret: "{{ lookup('env', 'KOMODO_API_SECRET') }}"
-    komodo_passkeys: "{{ lookup('env', 'KOMODO_PASSKEYS') }}"
-    # Method 3: Ansible Vault (recommended - create ansible/group_vars/all/vault.yml)
+
+    # Method 3: Environment Variables (configured via mise)
+    # komodo_auth_admin_username: "{{ lookup('env', 'KOMODO_ADMIN_USERNAME') }}"
+    # komodo_auth_admin_password: "{{ lookup('env', 'KOMODO_ADMIN_PASSWORD') }}"
+    # komodo_core_api_key: "{{ lookup('env', 'KOMODO_API_KEY') }}"
+    # komodo_core_api_secret: "{{ lookup('env', 'KOMODO_API_SECRET') }}"
+
+    # Method 4: Ansible Vault (recommended for production - create ansible/group_vars/all/vault.yml)
     # See: https://docs.ansible.com/ansible/latest/vault_guide/vault.html
-    #
+
+    # Service user configuration
     komodo_auth_service_user: "komodo-automation"
     komodo_auth_service_user_description: "Service user for automated deployments and API access"
     komodo_auth_api_key_name: "deployment-api-key"
 
     # komodo-op Configuration (Secret Management)
-    enable_komodo_op: true  # Set to true to enable komodo-op deployment
+    # enable_komodo_op: false  # Set to true to enable komodo-op deployment
     # NOTE: komodo-op repository is now defined in komodo-resource-syncs, not here
 
     # Resource Syncs Configuration (GitOps)
-    komodo_resource_syncs_repo: "brumi1024/komodo-resource-syncs"
-    komodo_resource_syncs_branch: "main"
-    komodo_resource_syncs_git_account: "brumi1024"
+    # komodo_resource_syncs_repo: "brumi1024/komodo-resource-syncs"
+    # komodo_resource_syncs_branch: "main"
+    # komodo_resource_syncs_git_account: "brumi1024"
 
 
   children:
@@ -96,7 +104,7 @@ all:
               ansible_host: "do-voyager.{{ tailnet }}"
               node_site: vps
               # Remote periphery with auto-generated passkey
-              generate_server_passkey: true
+              generate_server_passkey: false
               # Use Tailnet hostname for reliable cross-site connectivity
               server_address: "https://{{ ansible_host }}:{{ komodo_periphery_port }}"
 
