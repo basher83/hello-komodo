@@ -1,4 +1,4 @@
-# MISE Tasks Documentation
+#MISE Tasks Documentation
 
 Generated via `mise generate task-docs -s simple -o docs/mise-tasks.md`
 

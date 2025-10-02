@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# mise description="Install project dependencies"
-# mise depends=["pip:install", "ansible:install"]
+#MISE description="Install project dependencies"
+#MISE depends=["pip:install", "ansible:install"]
 
 if [ ! -f .vscode/settings.json ]
 then

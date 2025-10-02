@@ -1,5 +1,7 @@
 [settings]
 auto_install = true
+not_found_auto_install = true
+task_run_auto_install = true
 
 [tools]
 pre-commit = "4.3.0"

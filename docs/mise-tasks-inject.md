@@ -1,8 +1,9 @@
-# MISE Tasks Documentation Injected
+#MISE Tasks Documentation Injected
 
 Generated via `mise generate task-docs -s simple -i -o docs/mise-tasks-inject.md`
 
 <!-- mise-tasks -->
+
 ## `ansible-lint`
 
 - **Usage**: `ansible-lint`

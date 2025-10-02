@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# mise description="Reset the project to a clean state"
-# mise depends=["clean"]
+#MISE description="Reset the project to a clean state"
+#MISE depends=["clean"]
 
 rm -f .vscode/settings.json

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# mise description="Upgrade python requirements"
+#MISE description="Upgrade python requirements"
 
 get_dependencies() {
     pip freeze | grep -ve '-e'

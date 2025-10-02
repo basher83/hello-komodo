@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# mise description="Install python requirements"
+#MISE description="Install python requirements"
 
 if [ -f requirements.lock ]
 then

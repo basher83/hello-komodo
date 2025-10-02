@@ -4,7 +4,7 @@ This document outlines the development tools used in this repository. Each tool 
 
 ## Environment Management
 
-### Mise
+###MISE
 
 Development environment manager that handles tool version management and project tasks.
 
