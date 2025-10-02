@@ -1,28 +1,26 @@
 ---
-# WARNING: POTENTIAL SILENT FAILURE SCENARIO
-# ========================================
-# This check prevents recreating API keys if they exist in 1Password.
-# However, on FRESH deployments, if stale API keys exist in 1Password from
-# a previous deployment, this will skip API key creation in the NEW Komodo instance,
-# causing silent failures in subsequent playbooks.
+# Backend Abstraction Layer: Check for existing credentials
+# =========================================================
+# Uses pluggable secret backend (1password, infisical, ansible_vault)
+# to check if API keys already exist before creating new ones.
 #
-# SOLUTION: Before fresh deployments, ensure the "Komodo" item in 1Password
-# either doesn't exist or has the komodo_api_key field removed:
-#   op item delete "Komodo" --vault "Homelab Ansible"
-# OR
-#   op item edit "Komodo" --vault "Homelab Ansible" komodo_api_key=""
+# WARNING: POTENTIAL SILENT FAILURE SCENARIO
+# On FRESH Komodo deployments with STALE credentials in the secret backend,
+# this check will skip API key creation, causing failures in subsequent playbooks.
+#
+# SOLUTION: Use komodo_auth_force_recreate=true to force regeneration
+#   ansible-playbook playbooks/03_komodo_auth.yml -e komodo_auth_force_recreate=true
 
-- name: Check if API keys already exist in 1Password
-  ansible.builtin.shell: op item get "Komodo" --vault "Homelab" --fields komodo_api_key 2>/dev/null || echo ""
-  register: komodo_auth_existing_api_key
-  failed_when: false
-  changed_when: false
-  no_log: true
+- name: "Check if API keys already exist in {{ komodo_auth_secret_backend }}"
+  ansible.builtin.include_tasks: "backends/{{ komodo_auth_secret_backend }}.yml"
+  vars:
+    operation: "check"
 
 - name: Show API key recreation notice when forcing recreation
   ansible.builtin.debug:
     msg:
-      - "🔄 Force recreation enabled - will recreate API keys even though they exist in 1Password"
+      - "🔄 Force recreation enabled - will recreate API keys"
+      - "   Backend: {{ komodo_auth_secret_backend }}"
       - "⚠️  This will overwrite existing API keys!"
   when:
     - komodo_auth_existing_api_key.stdout != ""
@@ -61,7 +59,10 @@
 
 - name: Handle fresh deployment if admin user doesn't exist
   ansible.builtin.include_tasks: create_admin_user.yml
-  when: komodo_auth_login_test.status != 200
+  when:
+    - komodo_auth_login_test is defined
+    - komodo_auth_login_test.status is defined
+    - komodo_auth_login_test.status != 200
 
 - name: Login as admin user
   ansible.builtin.uri:
@@ -86,7 +87,11 @@
 
 - name: Create or find service user
   ansible.builtin.include_tasks: manage_service_user.yml
+
 - name: Create API key for service user
   ansible.builtin.include_tasks: create_api_key.yml
-- name: Store API credentials in 1Password
-  ansible.builtin.include_tasks: store_credentials.yml
+
+- name: "Store API credentials in {{ komodo_auth_secret_backend }}"
+  ansible.builtin.include_tasks: "backends/{{ komodo_auth_secret_backend }}.yml"
+  vars:
+    operation: "store"

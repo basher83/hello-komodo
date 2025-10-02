@@ -9,4 +9,24 @@ komodo_auth_retry_delay: 2
 komodo_auth_timeout: 30
 
 # API key recreation behavior
-komodo_auth_force_recreate: false  # Set to true to force API key recreation even if they exist in 1Password
+komodo_auth_force_recreate: false  # Set to true to force API key recreation even if they exist
+
+# =============================================================================
+# Secret Backend Configuration
+# =============================================================================
+# Supported backends: 1password | infisical | ansible_vault
+komodo_auth_secret_backend: "infisical"
+
+# 1Password Backend Settings (legacy support)
+komodo_auth_1password_vault: "Homelab Ansible"
+komodo_auth_1password_item: "Komodo"
+
+# Infisical Backend Settings
+komodo_auth_infisical_project_id: "7b832220-24c0-45bc-a5f1-ce9794a31259"
+komodo_auth_infisical_env: "prod"
+komodo_auth_infisical_path: "/komodo"
+komodo_auth_infisical_key_name: "KOMODO_API_KEY"
+komodo_auth_infisical_secret_name: "KOMODO_API_SECRET"
+
+# Ansible Vault Backend Settings (future support)
+# komodo_auth_vault_file: "{{ playbook_dir }}/../group_vars/all/vault.yml"

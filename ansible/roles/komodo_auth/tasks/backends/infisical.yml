@@ -1,0 +1,95 @@
+---
+# Infisical Secret Backend Implementation
+# Uses Infisical CLI for write operations (Ansible collection doesn't support writes yet)
+# Uses infisical-secret-lookup.yml task for read operations
+#
+# Operations:
+#   - check: Verify if credentials exist in Infisical
+#   - store: Save credentials to Infisical using CLI
+
+- name: "[Infisical] Check if API keys already exist"
+  block:
+    - name: "[Infisical] Try reading existing API key"
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/infisical-secret-lookup.yml"
+      vars:
+        secret_name: "{{ komodo_auth_infisical_key_name }}"
+        secret_var_name: "_infisical_check_api_key"
+        infisical_project_id: "{{ komodo_auth_infisical_project_id }}"
+        infisical_env: "{{ komodo_auth_infisical_env }}"
+        infisical_path: "{{ komodo_auth_infisical_path }}"
+        allow_empty: true
+
+    - name: "[Infisical] Set check result from successful lookup"
+      ansible.builtin.set_fact:
+        komodo_auth_existing_api_key:
+          stdout: "{{ _infisical_check_api_key | default('') }}"
+  rescue:
+    - name: "[Infisical] Key doesn't exist - set empty result"
+      ansible.builtin.set_fact:
+        komodo_auth_existing_api_key:
+          stdout: ""
+  when: operation == 'check'
+
+- name: "[Infisical] Validate authentication for write operations"
+  ansible.builtin.assert:
+    that:
+      - lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID') | length > 0
+      - lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET') | length > 0
+    fail_msg: |
+      ❌ Infisical Universal Auth credentials not found!
+
+      Required environment variables:
+        - INFISICAL_UNIVERSAL_AUTH_CLIENT_ID
+        - INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET
+    quiet: true
+  when: operation == 'store'
+
+- name: "[Infisical] Store API key using CLI"
+  ansible.builtin.shell: |
+    infisical secrets set \
+      "{{ komodo_auth_infisical_key_name }}={{ komodo_auth_api_key }}" \
+      --projectId="{{ komodo_auth_infisical_project_id }}" \
+      --env="{{ komodo_auth_infisical_env }}" \
+      --path="{{ komodo_auth_infisical_path }}" \
+      --silent
+  environment:
+    INFISICAL_UNIVERSAL_AUTH_CLIENT_ID: "{{ lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID') }}"
+    INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET: "{{ lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET') }}"
+  no_log: true
+  changed_when: true
+  when: operation == 'store'
+
+- name: "[Infisical] Store API secret using CLI"
+  ansible.builtin.shell: |
+    infisical secrets set \
+      "{{ komodo_auth_infisical_secret_name }}={{ komodo_auth_api_secret }}" \
+      --projectId="{{ komodo_auth_infisical_project_id }}" \
+      --env="{{ komodo_auth_infisical_env }}" \
+      --path="{{ komodo_auth_infisical_path }}" \
+      --silent
+  environment:
+    INFISICAL_UNIVERSAL_AUTH_CLIENT_ID: "{{ lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID') }}"
+    INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET: "{{ lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET') }}"
+  no_log: true
+  changed_when: true
+  when: operation == 'store'
+
+- name: "[Infisical] Verify stored API key by reading it back"
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/infisical-secret-lookup.yml"
+  vars:
+    secret_name: "{{ komodo_auth_infisical_key_name }}"
+    secret_var_name: "_infisical_verify_api_key"
+    infisical_project_id: "{{ komodo_auth_infisical_project_id }}"
+    infisical_env: "{{ komodo_auth_infisical_env }}"
+    infisical_path: "{{ komodo_auth_infisical_path }}"
+  when: operation == 'store'
+
+- name: "[Infisical] Assert credentials were stored successfully"
+  ansible.builtin.assert:
+    that:
+      - _infisical_verify_api_key is defined
+      - _infisical_verify_api_key | length > 0
+    fail_msg: "❌ Failed to verify API key storage in Infisical"
+    success_msg: "✅ API credentials successfully stored in Infisical"
+    quiet: true
+  when: operation == 'store'
