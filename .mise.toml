@@ -14,6 +14,7 @@ yamllint = "1.37.1"
 yamlfmt = "0.17.2"
 python = "3.13.7"
 git-cliff = "2.10.1"
+node = "latest"
 
 [env]
 _.python.venv = { path = ".venv", create = true } # create the venv if it doesn't exist
