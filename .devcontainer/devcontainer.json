@@ -21,11 +21,14 @@
   "mounts": [
     "source=mise-data-volume,target=/mnt/mise-data,type=volume"
   ],
-  "postCreateCommand": [
-    ".devcontainer/setup-mise.sh",
-    ".devcontainer/tailscaled-auth-setup.sh"
-  ],
+  "postCreateCommand": {
+    "mise": ".devcontainer/setup-mise.sh",
+    "tailscale": ".devcontainer/tailscaled-auth-setup.sh",
+    "ping": "sudo apt-get update && sudo apt-get install -y iputils-ping"
+  },
   "runArgs": [
-    "--device=/dev/net/tun"
+    "--device=/dev/net/tun",
+    "--cap-add=NET_ADMIN",
+    "--cap-add=MKNOD"
   ]
 }

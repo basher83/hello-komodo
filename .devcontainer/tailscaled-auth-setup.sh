@@ -27,7 +27,7 @@ count=100
 while ((count--)); do
   [[ -S $TAILSCALED_SOCK ]] && break
   sleep 0.1
-  
+
   if ((count == 0)); then
     >&2 echo "ERROR: tailscaled socket not found. Is tailscaled running?"
     exit 1
@@ -55,7 +55,7 @@ if [[ -n "$auth_key" ]]; then
     if [[ -n "${CODESPACE_NAME}" ]]; then
       hostnamearg="--hostname=${CODESPACE_NAME}"
     fi
-    
+
     if /usr/local/bin/tailscale up --accept-routes --authkey="$auth_key" $hostnamearg; then
       echo "Tailscale authentication successful"
     else

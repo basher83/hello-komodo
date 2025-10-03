@@ -5,5 +5,8 @@
         "**/tasks/**/*.yml": "ansible",
         "**/vars/**/*.yml": "ansible"
     },
-    "python.defaultInterpreterPath": "${workspaceFolder}/.venv"
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
+    "debug.javascript.defaultRuntimeExecutable": {
+        "pwa-node": "/home/vscode/.local/share/mise/shims/node"
+    }
 }
