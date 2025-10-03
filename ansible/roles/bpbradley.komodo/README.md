@@ -47,10 +47,10 @@ By default, the komodo user (i.e. the user perhiphery is run as) is managed by t
 
 ## Systemd Configuration
 
-This role supports running periphery under either the systemd **user** manager (i.e. `systemctl --user start periphery`) 
+This role supports running periphery under either the systemd **user** manager (i.e. `systemctl --user start periphery`)
 or the systemd **system** manager (i.e.`systemctl start periphery`). In both cases, the service process runs as `komodo_user`.
 
-- In **user** scope, the service is managed by the per-user systemd instance and therefore *must* run as that user. 
+- In **user** scope, the service is managed by the per-user systemd instance and therefore *must* run as that user.
   To have it start at boot without a login session, **linger** will be enabled for that user (`loginctl enable-linger komodo`) if `allow_modify_komodo_user=true`,
   which is the default.
 - In **system** scope, the unit is installed under the system manager and explicitly drops privileges to `komodo_user` via `User=` in the unit file.
@@ -81,7 +81,7 @@ Some features, for example [automatic versioning](#automatic-versioning) and [se
 Features which rely on API credentials, when enabled, will give an error indicating that API credentials are needed if they weren't provided.
 Below are the needed credentials to access the Komodo API.
 
-The `komodo_core_url` is just the address needed to reach komodo from the target server, *which can be different for each server if needed*. 
+The `komodo_core_url` is just the address needed to reach komodo from the target server, *which can be different for each server if needed*.
 The remaining API credentials are generated from within Komodo core in **Settings > Profile > New Api Key +**
 
 | Variable                       | Default                    | Description                                                                                     |
@@ -97,7 +97,7 @@ The remaining API credentials are generated from within Komodo core in **Setting
 
 ## Server Management
 
-When enabled and provided with API credentials / details, the role can automatically create and update servers for you. Including the ability to 
+When enabled and provided with API credentials / details, the role can automatically create and update servers for you. Including the ability to
 set *per-periphery* passkeys, rather than using global ones. Currently, that ability can only be done via the API. In order to use this feature, you must provide valid [API Credentials](#api-credentials)
 
 | Variable                       | Default                    | Description                                                                                     |
@@ -142,7 +142,7 @@ It helps to boot the system, manages networking, other system services, etc.
 
 They exist side-by-side for different purposes. Some of the relevant differences for this role come down to:
 
-- **Privilege / Isolation**: User services *must* run as the same user as the user manager. 
+- **Privilege / Isolation**: User services *must* run as the same user as the user manager.
 So privilege escalation should not be possible even with misconfiguration. Processes in user scopes should have cgroup-isolation from system services.
 - **Lifecycle**: User services tie to, obviously, the users session. Running with a service account can be tricky, and it requires linger-mode to be enabled for the user
 to keep the process alive after boot. It also makes debugging a little trickier, because you need to run commands from the proper runtime environment.
@@ -178,7 +178,7 @@ this feature whenever you update or install that server. The generated passkey i
 
 So for example, if you generated a random passkey on `install`, and then *DIDN'T* generate or set a passkey
 on a future `update`, the role will not have knowledge of a server passkey at all, and it will simply delete the randomly generated one that was previously provided,
-and it will not enforce passkey authentication, which is likely not the desired behavior. 
+and it will not enforce passkey authentication, which is likely not the desired behavior.
 
 Basically, the simple advice is to *ALWAYS* have `generate_server_passkey=true` or *ALWAYS* have `generate_server_passkey=false` for each server. I recommend setting
 these variables directly in an inventory file. See [`examples/server_management/inventory/all.yml`](./examples/server_management/inventory/all.yml) for an example.
@@ -206,7 +206,7 @@ For example, you could add this directly to the inventory for a particular host.
 komodo_agent_secrets:
   - name: "SECRET"
     value: "this-is-a-secret"
-  - name: "ANOTHER_SECRET" 
+  - name: "ANOTHER_SECRET"
     value: "also-a-secret"
   - name: "SUPER_SECRET"
     value: !vault |
@@ -237,13 +237,13 @@ komodo_agent_secrets:
                 komodo_allowed_ips:
                     - "::ffff:192.168.10.20"
     ```
-   
+
 4. **Optional** but recommended. Set an encrypted passkey using `ansible-vault` which matches the passkey set in Komodo Core.
 
     ```sh
     ansible-vault encrypt_string 'supersecretpasskey'
     ```
-    You will get an output like this, which we will use later. 
+    You will get an output like this, which we will use later.
 
     ```
     !vault |
@@ -278,7 +278,7 @@ playbook and control behavior with variables. Here is an example of doing it wit
           - role: bpbradley.komodo
           komodo_action: "install"
           komodo_version: "latest"
-          komodo_passkeys: 
+          komodo_passkeys:
             - !vault |
                 $ANSIBLE_VAULT;1.1;AES256
                 65353234373130353539663661376563613539303866643963363830376661316638333139343366
@@ -287,7 +287,7 @@ playbook and control behavior with variables. Here is an example of doing it wit
                 3834333462333162310a313037306336613061313733363862633437376133316234326431633131
                 35386565333538623231643433396334323132616438353839663534373030393266
     ```
-   
+
 6. Run the playbook
 
     Install using default values

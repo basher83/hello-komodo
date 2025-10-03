@@ -32,9 +32,7 @@
 
         - name: Pick first IPv4
           ansible.builtin.set_fact:
-            _core_dest_ip: "{{ host_lookup.stdout_lines
-              | select('match', '^[0-9]+\\.')
-              | map('split') | map('first') | first | default('') }}"
+            _core_dest_ip: "{{ host_lookup.stdout_lines | select('match', '^[0-9]+\\.') | map('split') | map('first') | first | default('') }}"
 
         - name: Fallback to default interface if something went wrong
           ansible.builtin.set_fact:

@@ -25,9 +25,7 @@
       when: _need_core_api_creds and not _have_core_api_creds
 
     - name: Check for unsupported configuration
-      when: (not (enable_server_management | bool)) and (
-        (server_passkey is defined) and ((server_passkey | string | trim) | length > 0)
-        )
+      when: (not (enable_server_management | bool)) and ( (server_passkey is defined) and ((server_passkey | string | trim) | length > 0) )
       ansible.builtin.fail:
         msg: >
           Setting a server passkey when `enable_server_management=false`.
