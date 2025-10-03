@@ -10,7 +10,7 @@
 - name: "[Infisical] Check if API keys already exist"
   block:
     - name: "[Infisical] Try reading existing API key"
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/infisical-secret-lookup.yml"
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../../../tasks/infisical-secret-lookup.yml"
       vars:
         secret_name: "{{ komodo_auth_infisical_key_name }}"
         secret_var_name: "_infisical_check_api_key"
@@ -75,7 +75,7 @@
   when: operation == 'store'
 
 - name: "[Infisical] Verify stored API key by reading it back"
-  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/infisical-secret-lookup.yml"
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/../../../../tasks/infisical-secret-lookup.yml"
   vars:
     secret_name: "{{ komodo_auth_infisical_key_name }}"
     secret_var_name: "_infisical_verify_api_key"

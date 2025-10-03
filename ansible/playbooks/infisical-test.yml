@@ -11,17 +11,17 @@
   gather_facts: false
   collections:
     - infisical.vault
-  
+
   pre_tasks:
     - name: Retrieve Test token form Infisical securely
       ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/infisical-secret-lookup.yml"
       vars:
-        secret_name: 'TEST_SECRET'
-        secret_var_name: 'test_token'
-        fallback_env_var: 'TEST_TOKEN'  # Optional
-        infisical_path: '/komodo'  # Optional, defaults to /komodo
-        infisical_env: 'prod'  # Optional, defaults to prod
-        allow_empty: false  # Optional, whether to allow empty values
+        secret_name: "TEST_SECRET"
+        secret_var_name: "test_token"
+        fallback_env_var: "TEST_TOKEN" # Optional
+        infisical_path: "/komodo" # Optional, defaults to /komodo
+        infisical_env: "prod" # Optional, defaults to prod
+        allow_empty: false # Optional, whether to allow empty values
       tags: [secrets]
 
   tasks:

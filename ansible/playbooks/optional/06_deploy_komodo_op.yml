@@ -86,7 +86,7 @@
     - name: Wait for komodo-op stack to appear
       ansible.builtin.include_tasks: ../tasks/komodo_stack_operations.yml
       vars:
-        stack_name_pattern: '.*komodo.*op.*'
+        stack_name_pattern: ".*komodo.*op.*"
         wait_for_stack_appear: true
         wait_for_running: false
         stack_appear_retries: 30
@@ -110,7 +110,7 @@
           type: "DeployStack"
           params:
             stack: "{{ komodo_op_stack }}"
-            services: []  # Deploy all services
+            services: [] # Deploy all services
         status_code: 200
       register: deploy_stack_result
 
@@ -121,7 +121,7 @@
     - name: Wait for komodo-op stack to be running
       ansible.builtin.include_tasks: ../tasks/komodo_stack_operations.yml
       vars:
-        stack_name_pattern: '.*komodo.*op.*'
+        stack_name_pattern: ".*komodo.*op.*"
         wait_for_stack_appear: false
         wait_for_running: true
         stack_running_retries: 60

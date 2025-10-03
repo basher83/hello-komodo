@@ -43,10 +43,18 @@ all:
     # Admin credentials (choose ONE method):
 
     # Method 1: Infisical (using Ansible collection lookup)
-    komodo_auth_admin_username: "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID'), universal_auth_client_secret=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET'), project_id='7b832220-24c0-45bc-a5f1-ce9794a31259', env_slug='prod', path='/komodo', secret_name='KOMODO_ADMIN_USERNAME').value }}"
-    komodo_auth_admin_password: "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID'), universal_auth_client_secret=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET'), project_id='7b832220-24c0-45bc-a5f1-ce9794a31259', env_slug='prod', path='/komodo', secret_name='KOMODO_ADMIN_PASSWORD').value }}"
-    komodo_core_api_key: "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID'), universal_auth_client_secret=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET'), project_id='7b832220-24c0-45bc-a5f1-ce9794a31259', env_slug='prod', path='/komodo', secret_name='KOMODO_API_KEY').value }}"
-    komodo_core_api_secret: "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID'), universal_auth_client_secret=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET'), project_id='7b832220-24c0-45bc-a5f1-ce9794a31259', env_slug='prod', path='/komodo', secret_name='KOMODO_API_SECRET').value }}"
+    komodo_auth_admin_username: "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID'), universal_auth_client_secret=lookup('env',
+      'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET'), project_id='7b832220-24c0-45bc-a5f1-ce9794a31259', env_slug='prod', path='/komodo', secret_name='KOMODO_ADMIN_USERNAME').value
+      }}"
+    komodo_auth_admin_password: "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID'), universal_auth_client_secret=lookup('env',
+      'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET'), project_id='7b832220-24c0-45bc-a5f1-ce9794a31259', env_slug='prod', path='/komodo', secret_name='KOMODO_ADMIN_PASSWORD').value
+      }}"
+    komodo_core_api_key: "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID'), universal_auth_client_secret=lookup('env',
+      'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET'), project_id='7b832220-24c0-45bc-a5f1-ce9794a31259', env_slug='prod', path='/komodo', secret_name='KOMODO_API_KEY').value
+      }}"
+    komodo_core_api_secret: "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=lookup('env', 'INFISICAL_UNIVERSAL_AUTH_CLIENT_ID'), universal_auth_client_secret=lookup('env',
+      'INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET'), project_id='7b832220-24c0-45bc-a5f1-ce9794a31259', env_slug='prod', path='/komodo', secret_name='KOMODO_API_SECRET').value
+      }}"
 
     # Method 2: 1Password (legacy - requires 1Password CLI setup)
     # komodo_auth_admin_username: "{{ lookup('community.general.onepassword', 'Komodo', field='username', vault='Homelab Ansible') }}"
@@ -77,7 +85,6 @@ all:
     # komodo_resource_syncs_branch: "main"
     # komodo_resource_syncs_git_account: "brumi1024"
 
-
   children:
     # Control machine (not managed by infrastructure playbooks)
     control:
@@ -107,5 +114,3 @@ all:
               generate_server_passkey: false
               # Use Tailnet hostname for reliable cross-site connectivity
               server_address: "https://{{ ansible_host }}:{{ komodo_periphery_port }}"
-
-

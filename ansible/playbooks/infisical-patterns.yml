@@ -37,15 +37,8 @@
     - name: Pull secrets with explicit UA into a dict
       no_log: true
       ansible.builtin.set_fact:
-        secrets: "{{ lookup('infisical.vault.read_secrets',
-                            auth_method='universal_auth',
-                            universal_auth_client_id=client_id,
-                            universal_auth_client_secret=client_secret,
-                            as_dict=True,
-                            project_id='7b832220-24c0-45bc-a5f1-ce9794a31259',
-                            env_slug='prod',
-                            path='/komodo',
-                            url=infisical_url) }}"
+        secrets: "{{ lookup('infisical.vault.read_secrets', auth_method='universal_auth', universal_auth_client_id=client_id, universal_auth_client_secret=client_secret,
+          as_dict=True, project_id='7b832220-24c0-45bc-a5f1-ce9794a31259', env_slug='prod', path='/komodo', url=infisical_url) }}"
 
 # 3) Minimal secret retrieval and usage in a module
 # DO NOT ACTUALLY DO THIS WITH A REAL SECRET

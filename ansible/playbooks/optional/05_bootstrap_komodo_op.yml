@@ -53,7 +53,7 @@
       when: >
         github_accounts_list.json |
         selectattr('domain', 'equalto', 'github.com') |
-        selectattr('username', 'equalto', 
+        selectattr('username', 'equalto',
           lookup('community.general.onepassword', 'Komodo Github Provider Account', field='username', vault='Homelab Ansible')) |
         list | length == 0
       tags: [github]
@@ -80,7 +80,8 @@
             description: "1Password vault UUID for komodo-op to sync from"
             is_secret: false
           - name: "OP_SERVICE_ACCOUNT_TOKEN"
-            value: "{{ lookup('community.general.onepassword', 'Komodo Homelab Access Token: Komodo Homelab Stacks', field='credential', vault='Homelab Ansible') }}"
+            value: "{{ lookup('community.general.onepassword', 'Komodo Homelab Access Token: Komodo Homelab Stacks', field='credential', vault='Homelab Ansible')
+              }}"
             description: "1Password Connect service account token for komodo-op"
             is_secret: true
           - name: "OP_CREDENTIALS_BASE64"
