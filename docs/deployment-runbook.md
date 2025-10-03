@@ -2,6 +2,9 @@
 
 This runbook documents the deployment workflow for Komodo infrastructure using Ansible.
 
+**NOTE**: This run book is translated here from the [brumi1024/homelab-ansible-komodo](https://github.com/brumi1024/homelab-ansible-komodo)
+repositories Makefile. It is being refactored to fit my specific use case and may not match the original exactly.
+
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
@@ -28,7 +31,7 @@ This runbook documents the deployment workflow for Komodo infrastructure using A
 mise run install
 ```
 
-This installs all required Ansible collections and dependencies.
+This installs all required Ansible collections and python dependencies.
 
 ### Verify Connectivity
 
