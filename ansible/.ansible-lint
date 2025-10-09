@@ -1,4 +1,3 @@
----
 # ansible-lint configuration file
 profile: safety
 
