@@ -83,9 +83,11 @@ ansible-playbook -i inventory/all.yml site.yml --tags core
 
 ```bash
 # Initialize Infisical secret scanning (if Infisical CLI available)
+# Creates .infisical.json config and baseline scan for false positives
 mise run infisical-init
 
-# Scan for secrets with baseline
+# Scan for secrets (credentials, API keys) in codebase using baseline
+# Use this to verify no secrets are committed before pushing
 mise run infisical-scan
 ```
 
@@ -104,7 +106,7 @@ mise run infisical-scan
 │   ├── ansible.cfg                # Ansible configuration (IMPORTANT)
 │   ├── inventory/
 │   │   ├── all.yml                # SINGLE SOURCE OF TRUTH for all config
-│   │   └── dynamic_tailscale.py   # Dynamic inventory script
+│   │   └── dynamic_tailscale.py   # Dynamic inventory for Tailscale network discovery
 │   ├── playbooks/
 │   │   ├── 01_docker.yml          # Install Docker
 │   │   ├── 02_komodo_core.yml     # Deploy Komodo Core
@@ -225,11 +227,13 @@ The `site.yml` playbook orchestrates deployment in this exact order:
 [defaults]
 inventory = inventory          # Default inventory path
 roles_path = roles:~/.ansible/roles
-host_key_checking = False      # CRITICAL: Disabled for Tailscale networks
+host_key_checking = False      # Disabled for Tailscale VPN (trusted network)
 gathering = smart              # Smart fact gathering
 fact_caching = memory          # In-memory fact cache
 
 [ssh_connection]
+# Note: StrictHostKeyChecking disabled for Tailscale VPN mesh network
+# All nodes are on trusted private network, SSH keys rotate frequently
 ssh_args = -o ControlMaster=auto -o ControlPersist=60s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 pipelining = True              # Performance optimization
 ```
