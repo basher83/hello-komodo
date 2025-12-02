@@ -197,9 +197,6 @@ The `site.yml` playbook orchestrates deployment in this exact order:
 
 ### Common Issues and Workarounds
 
-**Issue**: `ansible-galaxy install` fails with network errors  
-**Workaround**: This is expected in restricted sandbox environments. Collections must be pre-installed or environment must have internet access.
-
 **Issue**: Dynamic inventory script `dynamic_tailscale.py` causes warnings  
 **Workaround**: This is normal - warnings can be ignored. Script requires Tailscale access which isn't available in CI/sandbox.
 

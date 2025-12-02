@@ -39,10 +39,11 @@ overriding variables with `-e`
 # Update to latest
 ansible-playbook playbooks/komodo.yml \
     -e "komodo_action=update" \
-    -e "komodo_version=latest"
+    -e "komodo_version=latest" 
 
 # Uninstall and delete komodo service user
 ansible-playbook playbooks/komodo.yml \
     -e "komodo_action=uninstall" \
     -e "komodo_delete_user=true" \
 ```
+

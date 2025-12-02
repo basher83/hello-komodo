@@ -21,7 +21,7 @@ generate in **Settings > Profile > New Api Key +**
 Reminder to encrypt your API credentials with `ansible-vault`
 
 On `komodo_host1`, the host which is on the same machine as core,
-we are manually setting the server address to `https://host.docker.internal:{{ periphery_port }}`
+we are manually setting the server address to `https://host.docker.internal:{{ komodo_periphery_port }}`
 since we are specifying a unique bind address to the docker network. In this setup,
 this host does not have any passkeys configured.
 
@@ -45,7 +45,7 @@ Now, with server management, we can set periphery-unique passkeys, so
 those can be set with `server_passkey: some-secret-passkey` as `komodo_host3` does,
 or you can even allow the role to automatically generate a *new* unique passkey
 with every run, effectively rotating passkeys every update. This is enabled
-in `komodo_host2` settings.
+in `komodo_host2` settings. 
 
 The `server_passkey`, either explicitly provided or randomly generated, will
 ultimately be *merged* with the `komodo_passkeys` otherwise defined.
@@ -68,7 +68,7 @@ overriding variables with `-e`
 # Update to latest
 ansible-playbook playbooks/komodo.yml \
     -e "komodo_action=update" \
-    -e "komodo_version=latest"
+    -e "komodo_version=latest" 
 
 # Uninstall and delete komodo service user
 ansible-playbook playbooks/komodo.yml \

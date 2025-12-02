@@ -1,4 +1,3 @@
----
 # This is a fairly exhaustive example of pretty much all the ways
 # that you could configure an inventory file to modify the behavior
 # of the komodo role.
@@ -43,7 +42,7 @@ all:
           hosts:
             komodo_host1:
               # We can set a different periphery port if we want
-              periphery_port: 8199
+              komodo_periphery_port: 8199
               # Can be an internal docker IP for example if on the same host
               # You can even make this static if needed in your compose file
               # with `ipv4_address: 172.20.0.101` on its specified internal docker network
@@ -55,7 +54,7 @@ all:
               #     extra_hosts:
               #      - host.docker.internal:host-gateway
               # to our komodo core compose file.
-              server_address: https://host.docker.internal:{{ periphery_port }}
+              server_address: https://host.docker.internal:{{ komodo_periphery_port }}
               # We can bind to a particular interface, like the internal docker host gateway
               # Can figure this out with docker network inspect bridge --format '{{ (index .IPAM.Config 0).Gateway }}'
               # for example. Or check gateway for docker0 on your host, etc. But you should be able to get it
@@ -98,11 +97,11 @@ all:
               # Maybe you have multiple core instances, for example.
               # If using an inventory setup like this, you could do..
               komodo_allow_ips: >-
-                {{
-                  groups['core']
-                  | map('extract', hostvars, 'ansible_host')
-                  | list
-                }}
+                  {{
+                    groups['core']
+                    | map('extract', hostvars, 'ansible_host')
+                    | list
+                  }}
               # Or just manually specify them like this
               # komodo_allowed_ips:
               #  - "10.1.10.4"
