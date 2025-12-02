@@ -23,7 +23,7 @@ The example intentionally uses as many features as possible to be exhaustive, bu
 In case anything goes wrong, it is wise that you know
 how to deploy periphery using this role in a more typical
 manner first, from a proper ansible host. This way, if something goes wrong,
-you can very quickly remedy it with a redeploy from your working
+you can very quickly remedy it with a redeploy from your working 
 environment. Trying to debug issues with ansible-in-docker is not ideal. This should be done only once you have a working setup and want to add full automation.
 
 ## Step 1: Create the komodo-ee stack
@@ -40,7 +40,7 @@ environment. Trying to debug issues with ansible-in-docker is not ideal. This sh
 
 services:
   ansible:
-    image: ghcr.io/bpbradley/ansible/komodo-ee:latest
+    image: ghcr.io/bpbradley/ansible/komodo-ee:v1.3 # or latest
     extra_hosts:
       - host.docker.internal:host-gateway
     volumes:
@@ -71,7 +71,7 @@ us to do all steps in this guide from *within komodo* if we choose to.
 
 ## Step 2: Generate API Credentials
 
-This example uses server management, which require API credentials.
+This example uses server management, which require API credentials. 
 
 > [!NOTE]
 > You don't expressly need API credentials
@@ -150,8 +150,8 @@ For this guide, we will store the vault password as a komodo secret. **Komodo > 
 Update `ansible/inventory/komodo.yml` with the encrypted variables created above and configure the core URL:
 
 > [!IMPORTANT]
-> Review the example inventory and read the annotations.
-> In order for all of the automations to work as designed in all configurations,
+> Review the example inventory and read the annotations. 
+> In order for all of the automations to work as designed in all configurations, 
 > you should ideally name all of your inventory host names exactly the same as they are in komodo.
 > i.e. if you have a server in komodo with name `test_server` then you should make that servers inventory name `test_server`.
 > This isn't generally necessary, as you can always set an explicit `server_name` variable,
@@ -185,7 +185,7 @@ all:
             64613231323433373637313462633863613732653136366462313134393938623136326633346166
             3834333462333162310a313037306336613061313733363862633437376133316234326431633131
             35386565333538623231643433396334323132616438353839663534373030393266
-    # You will need to mount any ssh keys into the container,
+    # You will need to mount any ssh keys into the container, 
     # with the correct permissions for the user the container is running as
     ansible_ssh_private_key_file: /root/.ssh/id_ed25519 # i.e. (/path/to/ssh/key/in/container)
   children:
@@ -238,7 +238,7 @@ all:
               # The other servers will automatically determine their server address,
               # by detecting their route to komodo core based on the komodo_core_url.
               # This may not always work though, and so we can manually specify it like so.
-              server_address: https://host.docker.internal:{{ periphery_port }}
+              server_address: https://host.docker.internal:{{ komodo_periphery_port }}
               komodo_bind_ip: "{{ ansible_docker0.ipv4.address}}"
         periphery:
           hosts:
@@ -290,7 +290,7 @@ We are primarily controlling execution with inventory settings and Action argume
 
 ## Step 5: Automate with Actions
 
-With the infrastructure in place, we can handle complex automations using the komodo API, which we can leverage to make sure that periphery always stays up to date. Here is the action script and arguments to copy in **Actions > New Action > DeployPeriphery**
+With the infrastructure in place, we can handle complex automations using the komodo API, which we can leverage to make sure that periphery always stays up to date. Here is the action script and arguments to copy in **Actions > New Action > DeployPeriphery** 
 
 This script and the associated action arguments are fairly complex, so that as many use cases
 as possible can be captured with this setup. Feel free to simplify it (potentially dramatically) to meet your specific needs.
@@ -360,7 +360,7 @@ function recapHasFailures(recap: string): boolean {
   return failed || unreachable;
 }
 
-async function waitForServerUpdate(server: Server, timeoutMs = 20000, intervalMs = 1000): Promise<boolean> {
+async function waitForServerUpdate(server: Server, timeoutMs = 40000, intervalMs = 1000): Promise<boolean> {
   const end = Date.now() + timeoutMs;
   while (Date.now() < end) {
     const { version } = (await komodo.read("GetPeripheryVersion", { server: server.id })) as Types.GetPeripheryVersionResponse;
@@ -380,23 +380,23 @@ async function followContainerLogs(server: Server, containerId: string): Promise
     let recapSeen = false;
     let recapText: string | null = null;
     try {
-      await komodo.write("CreateTerminal", {
-        server: server.name,
-        name: term,
-        command: "/bin/bash",
-        recreate: Types.TerminalRecreateMode.Always
+      await komodo.write("CreateTerminal", { 
+        server: server.name, 
+        name: term, 
+        command: "/bin/bash", 
+        recreate: Types.TerminalRecreateMode.Always 
       });
-      await komodo.execute_terminal({
-        server: server.name,
-        terminal: term,
-        command: `${streamCmd}`
+      await komodo.execute_terminal({ 
+        server: server.name, 
+        terminal: term, 
+        command: `${streamCmd}` 
         },{
           onLine: (line) => {
             if (!recapSeen) {
               const i = line.indexOf("PLAY RECAP");
               if (i >= 0) {
-                recapSeen = true;
-                const first = line.slice(i);
+                recapSeen = true; 
+                const first = line.slice(i); 
                 recapText = first;
                 console.log(first);
               }
@@ -414,7 +414,7 @@ async function followContainerLogs(server: Server, containerId: string): Promise
 
   const first = await getRecap();
   if (first) return first;
-  // Server likely dropped out because it is currently updating.
+  // Server likely dropped out because it is currently updating. 
   // Wait a few seconds, then try to see if it comes back up, then try again
   await sleep(15000);
   const ok = await waitForServerUpdate(server);
@@ -545,7 +545,7 @@ async function update() {
     const allTargeted = candidates.length === allManaged.length;
     limitPattern = allTargeted ? undefined : candidates.map(s => s.name).join(",");
   }
-
+  
   const command = [
     "ansible-playbook",
     ARGS.PLAYBOOK,
@@ -624,9 +624,9 @@ It is now time to see if the update is working. set `"LIMIT_SERVERS": []` and **
 
 > [!NOTE]
 > Capturing logs from periphery here is surprisingly delicate. The
-> reason being that periphery goes offline during the update, and so we lose
-> connection. The run command runs detached, so the update will happen
-> regardless, but in order to capture logs we need to open a terminal and
+> reason being that periphery goes offline during the update, and so we lose 
+> connection. The run command runs detached, so the update will happen 
+> regardless, but in order to capture logs we need to open a terminal and 
 > try to follow the logs before the run completes. I did my best to handle this
 > without getting too hacky, but it may occasionally lose the output logs. It is
 > working well in my testing though.

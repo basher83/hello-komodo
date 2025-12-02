@@ -7,29 +7,25 @@
       become_user: "{{ systemd_ctx[komodo_service_scope].become_user }}"
       environment: "{{ systemd_ctx[komodo_service_scope].environment | default({}) }}"
       ansible.builtin.systemd:
-        name: komodo-periphery
+        name: periphery
         state: stopped
         scope: "{{ systemd_ctx[komodo_service_scope].scope }}"
-      failed_when: false
-      ignore_errors: true
 
     - name: Disable periphery
       become: true
       become_user: "{{ systemd_ctx[komodo_service_scope].become_user }}"
       environment: "{{ systemd_ctx[komodo_service_scope].environment | default({}) }}"
       ansible.builtin.systemd:
-        name: komodo-periphery
+        name: periphery
         enabled: false
         scope: "{{ systemd_ctx[komodo_service_scope].scope }}"
-      failed_when: false
-      ignore_errors: true
 
     - name: Remove periphery unit file
       become: true
       vars:
         _service_dir: "{{ '/etc/systemd/system' if komodo_service_scope == 'system' else (komodo_home ~ '/.config/systemd/user') }}"
       ansible.builtin.file:
-        path: "{{ _service_dir }}/komodo-periphery.service"
+        path: "{{ _service_dir }}/periphery.service"
         state: absent
 
     - name: Reload systemd daemon
@@ -65,7 +61,7 @@
         remove: true
         force: true
       become: true
-      when: allow_delete_komodo_user | default(false) | bool
+      when: allow_delete_komodo_user | default(false)
 
     - name: Debug message after uninstall
       ansible.builtin.debug:

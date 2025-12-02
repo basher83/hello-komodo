@@ -4,17 +4,20 @@
   vars:
     params:
       files:
-        - "{{ansible_distribution}}.yml"
-        - "{{ansible_os_family}}.yml"
+        - '{{ansible_facts.distribution}}.yml'
+        - '{{ansible_facts.os_family}}.yml'
         - main.yml
       paths:
-        - "vars"
+        - 'vars'
 
 - include_tasks: setup-RedHat.yml
-  when: ansible_os_family == 'RedHat'
+  when: ansible_facts.os_family == 'RedHat'
+
+- include_tasks: setup-Suse.yml
+  when: ansible_facts.os_family == 'Suse'
 
 - include_tasks: setup-Debian.yml
-  when: ansible_os_family == 'Debian'
+  when: ansible_facts.os_family == 'Debian'
 
 - name: Install Docker packages.
   package:
@@ -22,7 +25,7 @@
     state: "{{ docker_packages_state }}"
   notify: restart docker
   ignore_errors: "{{ ansible_check_mode }}"
-  when: "ansible_version.full is version_compare('2.12', '<') or ansible_os_family not in ['RedHat', 'Debian']"
+  when: "ansible_version.full is version_compare('2.12', '<') or ansible_facts.os_family not in ['RedHat', 'Debian']"
 
 - name: Install Docker packages (with downgrade option).
   package:
@@ -31,7 +34,7 @@
     allow_downgrade: true
   notify: restart docker
   ignore_errors: "{{ ansible_check_mode }}"
-  when: "ansible_version.full is version_compare('2.12', '>=') and ansible_os_family in ['RedHat', 'Debian']"
+  when: "ansible_version.full is version_compare('2.12', '>=') and ansible_facts.os_family in ['RedHat', 'Debian']"
 
 - name: Install docker-compose plugin.
   package:
@@ -39,7 +42,7 @@
     state: "{{ docker_compose_package_state }}"
   notify: restart docker
   ignore_errors: "{{ ansible_check_mode }}"
-  when: "docker_install_compose_plugin | bool == true and (ansible_version.full is version_compare('2.12', '<') or ansible_os_family not in ['RedHat', 'Debian'])"
+  when: "docker_install_compose_plugin | bool == true and (ansible_version.full is version_compare('2.12', '<') or ansible_facts.os_family not in ['RedHat', 'Debian', 'Suse'])"
 
 - name: Install docker-compose-plugin (with downgrade option).
   package:
@@ -48,22 +51,43 @@
     allow_downgrade: true
   notify: restart docker
   ignore_errors: "{{ ansible_check_mode }}"
-  when: "docker_install_compose_plugin | bool == true and ansible_version.full is version_compare('2.12', '>=') and ansible_os_family in ['RedHat', 'Debian']"
+  when: "docker_install_compose_plugin | bool == true and ansible_version.full is version_compare('2.12', '>=') and ansible_facts.os_family in ['RedHat', 'Debian']"
 
 - name: Ensure /etc/docker/ directory exists.
   file:
     path: /etc/docker
     state: directory
-    mode: "0755"
+    mode: 0755
   when: docker_daemon_options.keys() | length > 0
 
 - name: Configure Docker daemon options.
   copy:
     content: "{{ docker_daemon_options | to_nice_json }}"
     dest: /etc/docker/daemon.json
-    mode: "0644"
+    mode: 0644
   when: docker_daemon_options.keys() | length > 0
   notify: restart docker
+
+- name: Replace Docker service ExecStart command if configured.
+  when: docker_service_start_command != ""
+  notify: restart docker
+  block:
+    - name: Get Docker service status
+      ansible.builtin.systemd_service:
+        name: docker
+      register: docker_service_status
+
+    - name: Patch docker.service
+      ansible.builtin.replace:
+        path: "{{ docker_service_status.status['FragmentPath'] }}"
+        regexp: "^ExecStart=.*$"
+        replace: "ExecStart={{ docker_service_start_command }}"
+      register: docker_service_patch
+
+    - name: Reload systemd services
+      service:
+        daemon_reload: true
+      when: docker_service_patch is changed
 
 - name: Ensure Docker is started and enabled at boot.
   service:
@@ -83,7 +107,7 @@
   getent:
     database: group
     key: docker
-    split: ":"
+    split: ':'
   when: docker_users | length > 0
 
 - name: Check if there are any users to add to the docker group.

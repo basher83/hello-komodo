@@ -32,7 +32,9 @@
 
         - name: Pick first IPv4
           ansible.builtin.set_fact:
-            _core_dest_ip: "{{ host_lookup.stdout_lines | select('match', '^[0-9]+\\.') | map('split') | map('first') | first | default('') }}"
+            _core_dest_ip: "{{ host_lookup.stdout_lines
+              | select('match', '^[0-9]+\\.')
+              | map('split') | map('first') | first | default('') }}"
 
         - name: Fallback to default interface if something went wrong
           ansible.builtin.set_fact:
@@ -66,8 +68,8 @@
         - name: Set server_address to detected URL
           ansible.builtin.set_fact:
             _server_address: >-
-              {{ (ssl_enabled | ternary('https', 'http'))
-                ~ '://' ~ detected_advertise_ip ~ ':' ~ periphery_port }}
+              {{ (komodo_ssl_enabled | ternary('https', 'http'))
+                ~ '://' ~ detected_advertise_ip ~ ':' ~ komodo_periphery_port }}
 
     - name: Manage Server creation via Komodo Core API
       delegate_to: localhost
@@ -75,7 +77,6 @@
         - name: Check for existing server on Komodo Core
           check_mode: false
           changed_when: false
-          become: false
           ansible.builtin.uri:
             url: "{{ komodo_core_url | trim('/') }}/read"
             method: POST
@@ -95,7 +96,6 @@
 
         - name: Update server in Komodo Core
           when: not ansible_check_mode and probe.status == 200
-          become: false
           ansible.builtin.uri:
             url: "{{ komodo_core_url | trim('/') }}/write"
             method: POST
@@ -118,7 +118,6 @@
 
         - name: Create server with Komodo Core
           when: not ansible_check_mode and probe.status == 500
-          become: false
           ansible.builtin.uri:
             url: "{{ komodo_core_url | trim('/') }}/write"
             method: POST
