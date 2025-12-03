@@ -7,6 +7,6 @@
     },
     "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
     "debug.javascript.defaultRuntimeExecutable": {
-        "pwa-node": "/home/vscode/.local/share/mise/shims/node"
+        "pwa-node": "/Users/basher8383/.local/share/mise/shims/node"
     }
 }
