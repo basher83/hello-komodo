@@ -4,7 +4,7 @@ not_found_auto_install = true
 task_run_auto_install = true
 
 [tools]
-pre-commit = "4.3.0"
+pre-commit = "4.4.0"
 actionlint = "latest"
 markdownlint-cli2 = "0.18.1"
 rg = "14.1.1"
