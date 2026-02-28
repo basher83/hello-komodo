@@ -4,7 +4,7 @@ not_found_auto_install = true
 task_run_auto_install = true
 
 [tools]
-pre-commit = "4.3.0"
+prek = "0.2.13"
 actionlint = "latest"
 markdownlint-cli2 = "0.18.1"
 rg = "14.1.1"
@@ -15,6 +15,7 @@ yamlfmt = "0.20.0"
 python = "3.13.7"
 git-cliff = "2.10.1"
 node = "latest"
+uv = "0.9.13"
 
 [env]
 _.python.venv = { path = ".venv", create = true } # create the venv if it doesn't exist
@@ -23,15 +24,13 @@ _.python.venv = { path = ".venv", create = true } # create the venv if it doesn'
 # PRE-COMMIT HOOK TASKS
 # ============================================================================
 
-# Install git pre-commit hooks for automated checks
 [tasks.hooks-install]
-description = "Install pre-commit hooks for automated validation"
-run = "pre-commit install"
+description = "Install prek and infisical hooks"
+run = "prek install -f && infisical scan install --pre-commit-hook"
 
-# Manually run all pre-commit hooks against all files
-[tasks.hooks-run]
-description = "Run pre-commit hooks on all files (manual check)"
-run = "pre-commit run --all-files"
+[tasks.pre-commit-run]
+description = "Run prek hooks"
+run = "prek run --all-files"
 
 # ============================================================================
 # INFISICAL SECRET SCANNING TASKS
