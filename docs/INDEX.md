@@ -24,3 +24,10 @@ This index provides a high-level overview of the documentation files in this dir
 - **secret-management.md**: Detailed explanation of the pluggable secret backend system for Komodo
   authentication, covering supported backends (Infisical, 1Password, Ansible Vault), configuration,
   usage examples, troubleshooting, and adding new backends.
+
+## Directories
+
+- **reviews/**: Repository review documents and audits.
+  - **2026-02-26-comprehensive-repo-review.md**: Multi-area review covering security findings,
+    code quality issues, functionality gaps, and code simplification opportunities with a
+    prioritized implementation roadmap.
