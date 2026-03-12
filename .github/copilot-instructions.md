@@ -2,10 +2,10 @@
 
 ## Project Overview
 
-**Type**: Ansible infrastructure-as-code repository  
-**Purpose**: Automated deployment and management of Komodo container orchestration platform  
-**Size**: ~72 YAML files, primarily Ansible playbooks and roles  
-**Languages/Frameworks**: Ansible 2.19+, Python 3.13, YAML configuration  
+**Type**: Ansible infrastructure-as-code repository
+**Purpose**: Automated deployment and management of Komodo container orchestration platform
+**Size**: ~72 YAML files, primarily Ansible playbooks and roles
+**Languages/Frameworks**: Ansible 2.19+, Python 3.13, YAML configuration
 **Architecture**: Hub-and-spoke deployment with Komodo Core (central controller) and Komodo Periphery (distributed agents)
 
 ### Key Components
@@ -197,13 +197,13 @@ The `site.yml` playbook orchestrates deployment in this exact order:
 
 ### Common Issues and Workarounds
 
-**Issue**: Dynamic inventory script `dynamic_tailscale.py` causes warnings  
+**Issue**: Dynamic inventory script `dynamic_tailscale.py` causes warnings
 **Workaround**: This is normal - warnings can be ignored. Script requires Tailscale access which isn't available in CI/sandbox.
 
-**Issue**: Playbooks fail when testing locally without infrastructure  
+**Issue**: Playbooks fail when testing locally without infrastructure
 **Workaround**: Use `--syntax-check` or `--list-tasks` for validation without requiring actual hosts.
 
-**Issue**: Line length warnings from external roles  
+**Issue**: Line length warnings from external roles
 **Workaround**: Warnings from files in `ansible/roles/geerlingguy.docker/` and `ansible/roles/bpbradley.komodo/` are from external roles - ignore them.
 
 ### Root Directory Files
